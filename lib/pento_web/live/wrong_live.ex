@@ -1,15 +1,17 @@
 defmodule PentoWeb.WrongLive do
+  alias Pento.Accounts
   alias PentoWeb.WrongLive
   use Phoenix.LiveView, layout: {PentoWeb.LayoutView, "live.html"}
   alias PentoWeb.Router.Helpers, as: Routes
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     {:ok,
      assign(socket,
        answer: answer(),
        time: time(),
        score: 0,
-       message: "Make a guess:"
+       message: "Make a guess:",
+       session_id: session["live_socket_id"]
      )}
   end
 
@@ -77,6 +79,11 @@ defmodule PentoWeb.WrongLive do
           <%= n %>
         </a>
       <% end %>
+      <pre>
+        <%= @current_user.email %>
+        <%= @session_id %>
+
+      </pre>
     </h2>
 
 
