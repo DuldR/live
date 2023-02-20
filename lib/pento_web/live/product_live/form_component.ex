@@ -7,10 +7,51 @@ defmodule PentoWeb.ProductLive.FormComponent do
   def update(%{product: product} = assigns, socket) do
     changeset = Catalog.change_product(product)
 
+     socket
+     |> assign(assigns)
+     |> assign(:changeset, changeset)
+     |> allow_upload(:image,
+       accept: ~w(.jpg .jpeg .png),
+       max_entries: 1,
+       max_file_size: 9_000_000,
+       auto_upload: true,
+     progress: &handle_progress/3)
+     |> IO.inspect()
+
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:changeset, changeset)
+     |> allow_upload(:image,
+       accept: ~w(.jpg .jpeg .png),
+       max_entries: 1,
+       max_file_size: 9_000_000,
+       auto_upload: true,
+     progress: &handle_progress/3)}
+  end
+
+  defp handle_progress(:image, entry, socket) do
+    if entry.done? do
+      path =
+        consume_uploaded_entry(
+          socket,
+          entry,
+          &upload_static_file(&1, socket)
+        )
+      {:noreply,
+        socket
+        |> put_flash(:info, "file #{entry.client_name} uploaded")
+        |> assign(:image_upload, "bruh")}
+    else
+      {:noreply, socket}
+    end
+
+  end
+
+  def upload_static_file(%{path: path}, socket) do
+    dest = Path.join("priv/static/images", Path.basename(path))
+    File.cp!(path, dest)
+    {:ok, Routes.static_path(socket, "/images/#{Path.basename(dest)}")}
   end
 
   @impl true
