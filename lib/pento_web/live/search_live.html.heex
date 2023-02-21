@@ -1,0 +1,19 @@
+<h1> Search me ! </h1>
+
+<div>
+  <.form
+  let={f}
+  for={@changeset}
+  id="search-form"
+  phx-change="validate"
+  phx-submit="search">
+
+  <%= label f, :sku %>
+  <%= text_input f, :sku %>
+  <%= error_tag f, :sku %>
+
+
+  <%= submit "Searchin'", phx_disable_with: "Lookin it up" %>
+  </.form>
+
+</div>
